@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+factorization()
+{
+	if [ $# -ne 3 ];
+	then
+		arg=("$@")
+		sum=0
+		q=1
+		for i in ${arg[*]};
+		do
+			if [ $sum -gt 1 ];
+			then
+				q=$(echo $i*$q | bc)
+			fi
+			sum=$((sum + 1))
+		done
+	else
+		q=$3
+	fi
+
+	p=$2
+	n=$(echo "$1" | tr ':' '=')
+
+	res=$(echo "if($q > $p) 1 else 0" | bc)
+		if ((res == 1)); then
+			ncp=$p
+			p=$q
+			q=$ncp
+		fi
+
+	echo "$n$p*$q"
+}
+
+if [ $# -ne 1 ]
+then
+	echo 'Usage: factors <file>'
+	exit 1
+else
+	while read i
+	do
+		res=$(factor "$i")
+		factorization $res
+
+	done < "$1"
+fi
